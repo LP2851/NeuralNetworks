@@ -2,11 +2,22 @@ package network;
 
 import data.DataPoint;
 
+/**
+ * Overall network class
+ * @version 0.1
+ * @author lucas
+ */
 public class NeuralNetwork {
 
+    // All of the layers of the network (discluding input layer)
     private final Layer[] layers;
 
+    /**
+     *
+     * @param layerSizes A list of numbers representing the size of each of the layers (in order)
+     */
     public NeuralNetwork(int... layerSizes) {
+        // Creates the layers
         layers = new Layer[layerSizes.length-1];
         for (int i = 0; i < layers.length; i++) {
             layers[i] = new Layer(layerSizes[i], layerSizes[i+1]);
@@ -28,6 +39,11 @@ public class NeuralNetwork {
         return inputs;
     }
 
+    /**
+     * Classifies the input using the neural network
+     * @param inputs Inputs to the neural network
+     * @return The classification index of the input
+     */
     private int classify(double[] inputs) {
         double[] outputs = calculateOutputs(inputs);
 
@@ -43,6 +59,11 @@ public class NeuralNetwork {
         return maxValueIndex;
     }
 
+    /**
+     * Calculates the cost of the overall network on a data point
+     * @param dataPoint
+     * @return
+     */
     private double cost(DataPoint dataPoint) {
         double[] outputs = calculateOutputs(dataPoint.inputs);
         Layer outputLayer = layers[layers.length-1];
@@ -54,6 +75,11 @@ public class NeuralNetwork {
         return cost;
     }
 
+    /**
+     * Calculates the average cost of the network
+     * @param data All data points in the set
+     * @return Average cost of the network
+     */
     private double cost(DataPoint[] data) {
         double totalCost = 0;
 
