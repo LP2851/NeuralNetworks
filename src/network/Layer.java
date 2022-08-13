@@ -1,3 +1,5 @@
+package network;
+
 public class Layer {
 
     private final int numNodesIn, numNodesOut;

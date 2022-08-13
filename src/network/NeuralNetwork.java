@@ -1,3 +1,5 @@
+package network;
+
 import data.DataPoint;
 
 public class NeuralNetwork {

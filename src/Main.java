@@ -22,7 +22,7 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        // NeuralNetwork nn = new NeuralNetwork(28 * 28, 10, 10);
+        // network.NeuralNetwork nn = new network.NeuralNetwork(28 * 28, 10, 10);
     }
 
     private static void loadDataSets() {
