@@ -25,6 +25,47 @@ public class NeuralNetwork {
 
     }
 
+    public void learn(DataPoint[] trainingData, double learningRate) {
+        // Use backpropagation to calculate the gradient of the cost function
+
+        for (DataPoint dataPoint : trainingData)
+            updateAllGradients(dataPoint);
+
+        // Gradient decent step
+        applyAllGradients(learningRate / trainingData.length);
+
+        // Reset all gradients to zero to be ready for next training batch
+        clearAllGradients();
+    }
+
+    private void applyAllGradients(double learningRate) {
+         for (Layer layer : layers)
+             layer.applyGradients(learningRate);
+    }
+
+    private void clearAllGradients() {
+        for (Layer layer : layers)
+            layer.clearGradients();
+    }
+
+    private void updateAllGradients(DataPoint dataPoint) {
+        calculateOutputs(dataPoint.inputs);
+
+        // Backpropagation
+        // Update gradients of the output layer
+        Layer outputLayer = layers[layers.length-1];
+        double[] nodeValues = outputLayer.calculateOutputsLayerNodeValues(dataPoint.expectedOutputs);
+        outputLayer.updateGradients(nodeValues);
+
+        // Update gradients of hidden layers
+        for (int hiddenLayerIndex = layers.length-2; hiddenLayerIndex >= 0; hiddenLayerIndex--) {
+            Layer hiddenLayer = layers[hiddenLayerIndex];
+            nodeValues = hiddenLayer.calculateHiddenLayerNodeValues(layers[hiddenLayerIndex+1], nodeValues);
+            hiddenLayer.updateGradients(nodeValues);
+        }
+
+    }
+
     /**
      * Runs the inputs through the network
      * @param inputs The inputs to the network
@@ -80,7 +121,7 @@ public class NeuralNetwork {
      * @param data All data points in the set
      * @return Average cost of the network
      */
-    private double cost(DataPoint[] data) {
+    public double cost(DataPoint[] data) {
         double totalCost = 0;
 
         for(DataPoint dp : data) {

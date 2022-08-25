@@ -1,5 +1,7 @@
 package network;
 
+import java.util.Random;
+
 /**
  * Represents a layer in the neural network
  * @version 0.1
@@ -10,8 +12,15 @@ public class Layer {
     private final int numNodesIn, numNodesOut;
 
     // Weights for each of the connections
-    private final double[][] weights;
-    private final double[] biases;
+    public double[][] weights;
+    public double[] biases;
+
+    // Gradient Decent- Cost gradients
+    public double[][] costGradientWeights;
+    public double[] costGradientBias;
+
+    private double[] activations, weightedInputs, inputs;
+
 
     /**
      *
@@ -24,6 +33,28 @@ public class Layer {
 
         weights = new double[numNodesIn][numNodesOut];
         biases = new double[numNodesOut];
+
+        clearGradients();
+        initRandomWeights();
+    }
+
+    public void initRandomWeights() {
+        Random rand = new Random();
+        for (int i = 0; i < numNodesIn; i++) {
+            for (int j = 0; j < numNodesOut; j++) {
+                double randVal = rand.nextDouble() * 2 - 1;
+                weights[i][j] = randVal / Math.sqrt(numNodesIn);
+            }
+        }
+    }
+
+    public void applyGradients(double learnRate) {
+        for (int i = 0; i < numNodesOut; i++) {
+            biases[i] -= costGradientBias[i] * learnRate;
+            for (int j = 0; j < numNodesIn; j++) {
+                weights[j][i] -= costGradientWeights[j][i] * learnRate;
+            }
+        }
     }
 
     /**
@@ -32,7 +63,9 @@ public class Layer {
      * @return The layer's output activations.
      */
     public double[] calculateOutputs(double[] inputs) {
-        double[] activations = new double[numNodesOut];
+        activations = new double[numNodesOut];
+        weightedInputs = new double[numNodesOut];
+        this.inputs = inputs;
 
         // For each of the output nodes
         for (int outNode = 0; outNode < numNodesOut; outNode++) {
@@ -42,10 +75,55 @@ public class Layer {
                 weightedInput += inputs[inNode] * weights[inNode][outNode];
             }
             // Applies and activation function on the weighted input calculated
+            weightedInputs[outNode] = weightedInput;
             activations[outNode] = sigmoidFunction(weightedInput);
         }
 
         return activations;
+    }
+
+    public double[] calculateOutputsLayerNodeValues(double[] expectedOutputs) {
+        double[] nodeValues = new double[expectedOutputs.length];
+        for (int i = 0; i < nodeValues.length; i++) {
+            double costDerivative = nodeCostDerivative(activations[i],  expectedOutputs[i]);
+            double activationDerivative = sigmoidDerivativeFunction(weightedInputs[i]);
+            nodeValues[i] = activationDerivative * costDerivative;
+        }
+
+        return nodeValues;
+    }
+
+    public double[] calculateHiddenLayerNodeValues(Layer oldLayer, double[] oldNodeValues) {
+        double[] newNodeValues = new double[numNodesOut];
+        for (int newNodeIndex = 0; newNodeIndex < newNodeValues.length; newNodeIndex++) {
+            double newNodeValue = 0;
+            for (int oldNodeIndex = 0; oldNodeIndex < newNodeValues.length; oldNodeIndex++) {
+
+                // Partial derivative of the weighted input with respect to index
+                double weightedInputDerivative = oldLayer.weights[newNodeIndex][oldNodeIndex];
+            }
+
+            newNodeValue *= sigmoidDerivativeFunction(weightedInputs[newNodeIndex]);
+            newNodeValues[newNodeIndex] = newNodeValue;
+        }
+        return newNodeValues;
+    }
+
+    public void updateGradients(double[] nodeValues) {
+        for (int out = 0; out < numNodesOut; out++) {
+            for (int in = 0; in < numNodesIn; in++) {
+                double derivativeCostWrtWeight = inputs[in] * nodeValues[out];
+                costGradientWeights[in][out] += derivativeCostWrtWeight;
+            }
+
+            double derivativeCostWrtBias =  1 * nodeValues[out];
+            costGradientBias[out] += derivativeCostWrtBias;
+        }
+    }
+
+    public void clearGradients() {
+        costGradientWeights = new double[numNodesIn][numNodesOut];
+        costGradientBias = new double[numNodesOut];
     }
 
     /**
@@ -60,11 +138,22 @@ public class Layer {
         return error * error;
     }
 
+    public double nodeCostDerivative(double outputActivation, double expectedOutput) {
+        return 2 * (outputActivation - expectedOutput);
+    }
+
     /**
      * @return Number of in nodes
      */
     public int getNumNodesIn() {
         return numNodesIn;
+    }
+
+    /**
+     * @return Number of out nodes
+     */
+    public int getNumNodesOut() {
+        return numNodesOut;
     }
 
 
@@ -87,6 +176,11 @@ public class Layer {
      */
     private double sigmoidFunction(double x) {
         return 1d / (1d + Math.exp(-x));
+    }
+
+    private double sigmoidDerivativeFunction(double x) {
+        double activation = sigmoidFunction(x);
+        return activation * (1 - activation);
     }
 
     /**
