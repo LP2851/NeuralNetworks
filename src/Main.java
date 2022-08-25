@@ -1,5 +1,5 @@
+import data.BatchHandler;
 import data.DataPoint;
-import mnist.MnistPanel;
 import mnist.MnistReader;
 
 import java.io.IOException;
@@ -12,6 +12,7 @@ import java.io.IOException;
 public class Main {
 
     private static DataPoint[] trainingData, testingData;
+    private static final double learningRate = 0.25d;
 
     /**
      * Runs the neural network
@@ -22,13 +23,24 @@ public class Main {
         loadDataSets();
 
         // Displaying the images loaded (for debugging purposes)
-        try {
-            MnistPanel.showImages(trainingData);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            MnistPanel.showImages(trainingData);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
 
-        // network.NeuralNetwork nn = new network.NeuralNetwork(28 * 28, 10, 10);
+        network.NeuralNetwork nn = new network.NeuralNetwork(28 * 28, 10, 10);
+        BatchHandler<DataPoint> batchHandler = new BatchHandler<>(1000, trainingData, false, 100);
+        DataPoint[] batch = batchHandler.nextBatch();
+
+        while (batch.length > 0) {
+            nn.learn(batch, learningRate);
+
+            System.out.print("Batch Number: " + batchHandler.getBatchNumber());
+            System.out.print(" / " + batchHandler.calculateTotalBatchNumber() + "\n");
+            System.out.println(nn.cost(testingData));
+            batch = batchHandler.nextBatch();
+        }
     }
 
     /**
