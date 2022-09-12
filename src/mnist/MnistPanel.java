@@ -1,7 +1,5 @@
 package mnist;
 
-import data.DataPoint;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -9,16 +7,16 @@ import java.io.IOException;
 
 public class MnistPanel extends JPanel {
 
-    private final DataPoint[] dataPoints;
+    private final MnistDataPoint[] dataPoints;
     private final boolean showLabel = false;
     private int currentIndex = 0;
 
-    public MnistPanel(DataPoint[] dataPoints) {
+    public MnistPanel(MnistDataPoint[] dataPoints) {
         super();
         this.dataPoints = dataPoints;
     }
 
-    public static void showImages(DataPoint[] dataPoints) throws IOException, InterruptedException {
+    public static void showImages(MnistDataPoint[] dataPoints) throws IOException, InterruptedException {
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setBounds(100, 100, 450, 300);
@@ -26,7 +24,7 @@ public class MnistPanel extends JPanel {
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(new BorderLayout(0, 0));
 
-        MnistPanel p =new MnistPanel(dataPoints);
+        MnistPanel p = new MnistPanel(dataPoints);
         p.nextImage();
 
         contentPane.add(p, BorderLayout.CENTER);

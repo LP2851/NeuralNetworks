@@ -1,7 +1,5 @@
 package mnist;
 
-import data.DataPoint;
-
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -9,7 +7,7 @@ import java.io.IOException;
 
 public class MnistReader {
 
-    public static final int MNIST_CLASSIFICATIONS = 10;
+    public static final int MNIST_CLASSIFICATIONS_TOTAL = 10;
     public static final int MNIST_IMAGE_WIDTH_HEIGHT = 28;
     public static final int MNIST_IMAGE_TOTAL_SIZE = MNIST_IMAGE_WIDTH_HEIGHT * MNIST_IMAGE_WIDTH_HEIGHT;
 
@@ -19,18 +17,18 @@ public class MnistReader {
     public static final String TRAINING_LABELS_PATH = "resources\\mnist\\train-labels.idx1-ubyte";
 
 
-    public static DataPoint[] getTrainingDataPoints()
-        throws IOException {
+    public static MnistDataPoint[] getTrainingDataPoints()
+            throws IOException {
         return readData(TRAINING_DATA_PATH, TRAINING_LABELS_PATH);
     }
 
-    public static DataPoint[] getTestingDataPoints()
+    public static MnistDataPoint[] getTestingDataPoints()
             throws IOException {
         return readData(TESTING_DATA_PATH, TESTING_LABELS_PATH);
     }
 
-    private static DataPoint[] readData(String dataFilePath, String labelFilePath)
-        throws IOException {
+    private static MnistDataPoint[] readData(String dataFilePath, String labelFilePath)
+            throws IOException {
 
         DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new FileInputStream(dataFilePath)));
 
@@ -44,7 +42,7 @@ public class MnistReader {
         int labelMagicNumber = labelInputStream.readInt();
         int numberOfLabels = labelInputStream.readInt();
 
-        DataPoint[] data = new DataPoint[numOfItems];
+        var data = new MnistDataPoint[numOfItems];
 
         for(int i = 0; i < numOfItems; i++) {
             double[][] image = new double[MNIST_IMAGE_WIDTH_HEIGHT][MNIST_IMAGE_WIDTH_HEIGHT];
@@ -55,7 +53,7 @@ public class MnistReader {
                     image[r][c]= dataInputStream.readUnsignedByte();
                 }
             }
-            data[i] = DataPoint.createMnistDataPoint(image, label);
+            data[i] = MnistDataPoint.createMnistDataPoint(image, label);
         }
         dataInputStream.close();
         labelInputStream.close();

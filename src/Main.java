@@ -23,6 +23,7 @@ public class Main {
         loadDataSets();
 
         // Displaying the images loaded (for debugging purposes)
+
 //        try {
 //            MnistPanel.showImages(trainingData);
 //        } catch (Exception e) {
@@ -30,8 +31,9 @@ public class Main {
 //        }
 
         network.NeuralNetwork nn = new network.NeuralNetwork(28 * 28, 10, 10);
-        BatchHandler<DataPoint> batchHandler = new BatchHandler<>(1000, trainingData, false, 100);
-        DataPoint[] batch = batchHandler.nextBatch();
+        //BatchHandler<DataPoint> batchHandler = new BatchHandler<>(1000, trainingData, false, 100);
+        BatchHandler<DataPoint> batchHandler = new BatchHandler<>(1000, trainingData, 10, true);
+        var batch = batchHandler.nextBatch();
 
         while (batch.length > 0) {
             nn.learn(batch, learningRate);
