@@ -1,6 +1,7 @@
 import data.BatchHandler;
 import data.DataPoint;
 import mnist.MnistReader;
+import output.NetworkJSONExporter;
 
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ public class Main {
 
         network.NeuralNetwork nn = new network.NeuralNetwork(28 * 28, 10, 10);
         //BatchHandler<DataPoint> batchHandler = new BatchHandler<>(1000, trainingData, false, 100);
-        BatchHandler<DataPoint> batchHandler = new BatchHandler<>(1000, trainingData, 10, true);
+        BatchHandler<DataPoint> batchHandler = new BatchHandler<>(1000, trainingData, 1, true);
         var batch = batchHandler.nextBatch();
 
         while (batch.length > 0) {
@@ -43,6 +44,9 @@ public class Main {
             System.out.println(nn.cost(testingData));
             batch = batchHandler.nextBatch();
         }
+
+        if (NetworkJSONExporter.saveNetwork(nn, "network1"))
+            System.out.println("Network Saved");
     }
 
     /**

@@ -4,13 +4,14 @@ import data.DataPoint;
 
 /**
  * Overall network class
- * @version 0.1
+ *
  * @author lucas
+ * @version 0.2
  */
 public class NeuralNetwork {
 
-    // All of the layers of the network (discluding input layer)
-    private final Layer[] layers;
+    // All the layers of the network (discluding input layer)
+    public final Layer[] layers;
 
     /**
      *
@@ -18,9 +19,9 @@ public class NeuralNetwork {
      */
     public NeuralNetwork(int... layerSizes) {
         // Creates the layers
-        layers = new Layer[layerSizes.length-1];
+        layers = new Layer[layerSizes.length - 1];
         for (int i = 0; i < layers.length; i++) {
-            layers[i] = new Layer(layerSizes[i], layerSizes[i+1]);
+            layers[i] = new Layer(layerSizes[i], layerSizes[i + 1]);
         }
 
     }
